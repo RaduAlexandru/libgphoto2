@@ -5857,6 +5857,9 @@ camera_trigger_capture (Camera *camera, GPContext *context)
 	int		sdram = 0;
 	int		af = 1;
 
+	ptp_nikon_capture2 (params, 0, 1);
+	return 0;
+
 	GP_LOG_D ("camera_trigger_capture");
 
 	SET_CONTEXT_P(params, context);
