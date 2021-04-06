@@ -1504,9 +1504,13 @@ ptp_generic_no_data (PTPParams* params, uint16_t code, unsigned int n_param, ...
 	ptp.Code=code;
 	ptp.Nparam=n_param;
 
+	//printf("---------------n params is %d\n", n_param);
+
 	va_start(args, n_param);
-	for( i=0; i<n_param; ++i )
+	for( i=0; i<n_param; ++i ){
 		(&ptp.Param1)[i] = va_arg(args, uint32_t);
+		//printf("---------------param at %d is %lu \n",i, (unsigned long)(&ptp.Param1)[i] );
+	}
 	va_end(args);
 
 	return ptp_transaction(params, &ptp, PTP_DP_NODATA, 0, NULL, NULL);

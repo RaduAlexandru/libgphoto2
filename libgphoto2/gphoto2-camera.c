@@ -1371,6 +1371,36 @@ gp_camera_trigger_capture (Camera *camera, GPContext *context)
 	return (GP_OK);
 }
 
+//finishes the capturing process by reading the result from the camera port
+int gp_camera_finish_trigger_capture (Camera *camera, GPContext *context){
+
+
+
+	CHECK_RESULT_OPEN_CLOSE (camera, camera->functions->finish_trigger_capture (camera,
+				                                                context), context);
+
+	//uint16_t ret;
+	//ret = params->getresp_func(params, ptp);
+
+	//PTPUSBBulkContainer     usbresp;
+	//printf("222222\n");
+	//memset(&usbresp,0,sizeof(usbresp));
+	//printf("333333\n");
+	/* read response, it should never be longer than sizeof(usbresp) */
+	//the ptp_usb_getpacket function is not declared ehre so we write the insides of that func here directy
+//        if (params->response_packet_size > 0) {
+					//                        printf("what-----------------------------\n");
+					//                                }
+					//                                        int result_read=gp_port_read (camera->port, (char*) (&usbresp), sizeof(usbresp));
+					//                                                printf("result from read is %d\n", result_read);
+					//                                                        if (result_read==0){
+					//                                                                        result_read=gp_port_read (camera->port, (char*) (&usbresp), sizeof(usbresp));
+					//                                                                                }
+					//
+
+	return (GP_OK);
+}
+
 /**
  * Captures a preview that won't be stored on the camera but returned in
  * supplied file.

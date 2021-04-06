@@ -299,6 +299,7 @@ typedef struct _CameraFunctions {
 	/* Capturing */
 	CameraCaptureFunc        capture;	/**< \brief Remote control the camera to capture */
 	CameraTriggerCaptureFunc trigger_capture;/**< \brief Remote control the camera to trigger capture */
+	CameraTriggerCaptureFunc finish_trigger_capture;/**< \brief Finish the remote triggering by getting the ack from the port */
 	CameraCapturePreviewFunc capture_preview;/**< \brief Preview viewfinder content. */
 
 	/* Textual information */
@@ -402,6 +403,7 @@ int gp_camera_get_about		 (Camera *camera, CameraText *about,
 int gp_camera_capture 		 (Camera *camera, CameraCaptureType type,
 				  CameraFilePath *path, GPContext *context);
 int gp_camera_trigger_capture 	 (Camera *camera, GPContext *context);
+int gp_camera_finish_trigger_capture 	 (Camera *camera, GPContext *context);
 int gp_camera_capture_preview 	 (Camera *camera, CameraFile *file,
 				  GPContext *context);
 int gp_camera_wait_for_event     (Camera *camera, int timeout,

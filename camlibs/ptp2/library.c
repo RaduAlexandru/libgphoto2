@@ -5848,6 +5848,21 @@ camera_trigger_canon_eos_capture (Camera *camera, GPContext *context)
 	return GP_OK;
 }
 
+static int 
+camera_finish_trigger_capture (Camera *camera, GPContext *context){
+
+	PTPUSBBulkContainer	usbresp;
+	memset(&usbresp,0,sizeof(usbresp));
+	/* read response, it should never be longer than sizeof(usbresp) */
+	//the ptp_usb_getpacket function is not declared ehre so we write the insides of that func here directy
+	int result_read=gp_port_read (camera->port, (char*) (&usbresp), sizeof(usbresp));
+	if (result_read==0){
+		result_read=gp_port_read (camera->port, (char*) (&usbresp), sizeof(usbresp));
+	}
+
+}
+
+
 static int
 camera_trigger_capture (Camera *camera, GPContext *context)
 {
@@ -5857,7 +5872,102 @@ camera_trigger_capture (Camera *camera, GPContext *context)
 	int		sdram = 0;
 	int		af = 1;
 
-	ptp_nikon_capture2 (params, 0, 1);
+	//lvl 1 depth
+	//ptp_nikon_capture2 (params, 0, 1);
+
+	//lvl2 depth
+	//ptp_generic_no_data(params, PTP_OC_NIKON_InitiateCaptureRecInMedia, 2, 0xffffffff, 1 );
+	
+	//lvl3 depth 
+	//PTPContainer	ptp;
+	//memset(&ptp, 0, sizeof(ptp));
+	//ptp.Code=PTP_OC_NIKON_InitiateCaptureRecInMedia;
+	//ptp.Nparam=2;
+	//(&ptp.Param1)[0] = 4294967295; //equivalent to 0xffffffff
+	//(&ptp.Param1)[1] = 1;
+	//ptp_transaction(params, &ptp, PTP_DP_NODATA, 0, NULL, NULL);
+
+	//lvl4 depth 
+	//PTPContainer    ptp;
+	//memset(&ptp, 0, sizeof(ptp));
+	//ptp.Code=PTP_OC_NIKON_InitiateCaptureRecInMedia;
+	//ptp.Nparam=2;
+	//(&ptp.Param1)[0] = 4294967295; //equivalent to 0xffffffff
+	//(&ptp.Param1)[1] = 1;
+	//PTPDataHandler	handler;
+	//ptp_transaction_new (params, &ptp, PTP_DP_NODATA, 0, &handler);
+
+	//lvl5 depth
+	//PTPContainer    ptp;
+	//memset(&ptp, 0, sizeof(ptp));
+	//ptp.Code=PTP_OC_NIKON_InitiateCaptureRecInMedia;
+	//ptp.Nparam=2;
+	//(&ptp.Param1)[0] = 4294967295; //equivalent to 0xffffffff
+	//(&ptp.Param1)[1] = 1;
+	//PTPDataHandler	handler;
+	//ptp.Transaction_ID=params->transaction_id++;
+	//ptp.SessionID=params->session_id;
+	//params->sendreq_func (params, &ptp, PTP_DP_NODATA);
+	//params->getresp_func(params, &ptp);
+
+
+	//lvl6 depth 
+	if (0){
+	PTPContainer    ptp;
+	memset(&ptp, 0, sizeof(ptp));
+	ptp.Code=PTP_OC_NIKON_InitiateCaptureRecInMedia;
+	ptp.Nparam=2;
+	(&ptp.Param1)[0] = 4294967295; //equivalent to 0xffffffff
+	(&ptp.Param1)[1] = 1;
+	PTPDataHandler  handler;
+	ptp.Transaction_ID=params->transaction_id++;
+	ptp.SessionID=params->session_id;
+	params->sendreq_func (params, &ptp, PTP_DP_NODATA);
+	printf("finsihed senreq\n");
+	//params->getresp_func(params, &ptp);
+	uint32_t		rlen;
+	printf("1111111\n");
+	PTPUSBBulkContainer	usbresp;
+	printf("222222\n");
+	memset(&usbresp,0,sizeof(usbresp));
+	printf("333333\n");
+	/* read response, it should never be longer than sizeof(usbresp) */
+	//the ptp_usb_getpacket function is not declared ehre so we write the insides of that func here directy
+	if (params->response_packet_size > 0) {
+		printf("what-----------------------------\n");
+	}
+	int result_read=gp_port_read (camera->port, (char*) (&usbresp), sizeof(usbresp));
+	printf("result from read is %d\n", result_read);
+	if (result_read==0){
+		result_read=gp_port_read (camera->port, (char*) (&usbresp), sizeof(usbresp));
+	}
+	printf("444444\n");
+	printf("finsihed get_resp_func\n");
+	}
+
+
+	//lvl7 depth 
+	PTPContainer    ptp;
+	memset(&ptp, 0, sizeof(ptp));
+	ptp.Code=PTP_OC_NIKON_InitiateCaptureRecInMedia;
+	ptp.Nparam=2;
+	(&ptp.Param1)[0] = 4294967295; //equivalent to 0xffffffff
+	(&ptp.Param1)[1] = 1;
+	PTPDataHandler  handler;
+	ptp.Transaction_ID=params->transaction_id++;
+	ptp.SessionID=params->session_id;
+	params->sendreq_func (params, &ptp, PTP_DP_NODATA);
+	printf("finsihed senreq\n");
+	//params->getresp_func(params, &ptp);
+	uint32_t		rlen;
+	printf("1111111\n");
+	PTPUSBBulkContainer	usbresp;
+	printf("222222\n");
+	memset(&usbresp,0,sizeof(usbresp));
+	printf("333333\n");
+	printf("444444\n");
+	printf("finsihed get_resp_func\n");
+
 	return 0;
 
 	GP_LOG_D ("camera_trigger_capture");
@@ -9298,6 +9408,7 @@ camera_init (Camera *camera, GPContext *context)
 	camera->functions->about = camera_about;
 	camera->functions->exit = camera_exit;
 	camera->functions->trigger_capture = camera_trigger_capture;
+	camera->functions->finish_trigger_capture = camera_finish_trigger_capture;
 	camera->functions->capture = camera_capture;
 	camera->functions->capture_preview = camera_capture_preview;
 	camera->functions->summary = camera_summary;
