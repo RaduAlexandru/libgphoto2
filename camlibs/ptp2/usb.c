@@ -103,6 +103,7 @@ ptp_usb_sendreq (PTPParams* params, PTPContainer* req, int dataphase)
 	/* send it to responder */
 	towrite = PTP_USB_BULK_REQ_LEN-(sizeof(uint32_t)*(5-req->Nparam));
 retry:
+	//printf("---calling gp_port_write\n");
 	res = gp_port_write (camera->port, (char*)&usbreq, towrite);
 	if (res != towrite) {
 		if (res < 0) {

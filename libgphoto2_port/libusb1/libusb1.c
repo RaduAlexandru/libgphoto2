@@ -389,8 +389,10 @@ gp_libusb1_open (GPPort *port)
 
 	GP_LOG_D ("()");
 	C_PARAMS (port);
+	printf("--------------------------------------------------------------------\n");
 
 	if (!port->pl->d) {
+		printf("calling find_path_lib\n");
 		gp_libusb1_find_path_lib(port);
 		C_PARAMS (port->pl->d);
 	}
@@ -590,9 +592,42 @@ gp_libusb1_write (GPPort *port, const char *bytes, int size)
 
 	C_PARAMS (port && port->pl->dh);
 
+
+
+
+	//attempt 2, do it with async
+	//https://www.socallinuxexpo.org/sites/default/files/presentations/scale_2017_usb.pdf
+	//https://github.com/libusb/libusb/blob/master/examples/sam3u_benchmark.c
+	//struct libusb_transfer *transfer;
+	//transfer = libusb_alloc_transfer(0);
+	//libusb_fill_bulk_transfer(transfer, port->pl->dh, port->settings.usb.outep, (unsigned char*)bytes, size, NULL, NULL, 500/*timeout*/ );
+	//libusb_submit_transfer(transfer);
+
+	//return size;
+
+
+
+
+
+	//if (size==20){
+	if (0){
+	printf("callingg libusb interrupt tranfer with nr of bytes %d and timeout %d and endpoint is %d \n", size, port->timeout, (int)port->settings.usb.outep  );
+
+	//C_LIBUSB (libusb_bulk_transfer (port->pl->dh, port->settings.usb.outep,
+	//int r = libusb_interrupt_transfer (port->pl->dh, port->settings.usb.outep,
+	int r = libusb_interrupt_transfer (port->pl->dh, 0x83,
+                           (unsigned char*)bytes, size, &curwritten, port->timeout);
+	printf("interupt tranfer return is %d\n", r);
+	}else{
+
+	//printf("callingg libusb bulk tranfer with nr of bytes %d and timeout %d and endpoit is %d \n", size, port->timeout, (int)port->settings.usb.outep  );
 	C_LIBUSB (libusb_bulk_transfer (port->pl->dh, port->settings.usb.outep,
-                           (unsigned char*)bytes, size, &curwritten, port->timeout),
+	//C_LIBUSB (libusb_interrupt_transfer (port->pl->dh, port->settings.usb.outep,
+                           //(unsigned char*)bytes, size, &curwritten, port->timeout),
+                           (unsigned char*)bytes, size, &curwritten, 0),
                   GP_ERROR_IO_WRITE);
+	  }
+
 
         return curwritten;
 }
@@ -1113,6 +1148,7 @@ gp_libusb1_find_path_lib(GPPort *port)
 
 		port->settings.usb.inep  = gp_libusb1_find_ep(pl->devs[d], config, interface, altsetting, LIBUSB_ENDPOINT_IN, LIBUSB_TRANSFER_TYPE_BULK);
 		port->settings.usb.outep = gp_libusb1_find_ep(pl->devs[d], config, interface, altsetting, LIBUSB_ENDPOINT_OUT, LIBUSB_TRANSFER_TYPE_BULK);
+		//port->settings.usb.outep = gp_libusb1_find_ep(pl->devs[d], config, interface, altsetting, LIBUSB_ENDPOINT_OUT, LIBUSB_TRANSFER_TYPE_INTERRUPT);
 		port->settings.usb.intep = gp_libusb1_find_ep(pl->devs[d], config, interface, altsetting, LIBUSB_ENDPOINT_IN, LIBUSB_TRANSFER_TYPE_INTERRUPT);
 
 		port->settings.usb.maxpacketsize = libusb_get_max_packet_size (pl->devs[d], port->settings.usb.inep);
@@ -1205,6 +1241,7 @@ gp_libusb1_find_device_lib(GPPort *port, int idvendor, int idproduct)
 
 		port->settings.usb.inep  = gp_libusb1_find_ep(pl->devs[d], config, interface, altsetting, LIBUSB_ENDPOINT_IN, LIBUSB_TRANSFER_TYPE_BULK);
 		port->settings.usb.outep = gp_libusb1_find_ep(pl->devs[d], config, interface, altsetting, LIBUSB_ENDPOINT_OUT, LIBUSB_TRANSFER_TYPE_BULK);
+		//port->settings.usb.outep = gp_libusb1_find_ep(pl->devs[d], config, interface, altsetting, LIBUSB_ENDPOINT_OUT, LIBUSB_TRANSFER_TYPE_INTERRUPT);
 		port->settings.usb.intep = gp_libusb1_find_ep(pl->devs[d], config, interface, altsetting, LIBUSB_ENDPOINT_IN, LIBUSB_TRANSFER_TYPE_INTERRUPT);
 
 		port->settings.usb.maxpacketsize = libusb_get_max_packet_size (pl->devs[d], port->settings.usb.inep);
@@ -1488,6 +1525,7 @@ gp_libusb1_find_device_by_class_lib(GPPort *port, int class, int subclass, int p
 
 		port->settings.usb.inep  = gp_libusb1_find_ep(pl->devs[d], config, interface, altsetting, LIBUSB_ENDPOINT_IN, LIBUSB_TRANSFER_TYPE_BULK);
 		port->settings.usb.outep = gp_libusb1_find_ep(pl->devs[d], config, interface, altsetting, LIBUSB_ENDPOINT_OUT, LIBUSB_TRANSFER_TYPE_BULK);
+		//port->settings.usb.outep = gp_libusb1_find_ep(pl->devs[d], config, interface, altsetting, LIBUSB_ENDPOINT_OUT, LIBUSB_TRANSFER_TYPE_INTERRUPT);
 		port->settings.usb.intep = gp_libusb1_find_ep(pl->devs[d], config, interface, altsetting, LIBUSB_ENDPOINT_IN, LIBUSB_TRANSFER_TYPE_INTERRUPT);
 		port->settings.usb.maxpacketsize = 0;
 		GP_LOG_D ("inep to look for is %02x", port->settings.usb.inep);

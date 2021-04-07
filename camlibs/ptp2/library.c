@@ -823,6 +823,7 @@ nikon_wait_busy(PTPParams *params, int waitms, int timeout) {
 				return PTP_RC_OK;
 			return res;
 		}
+		printf("waiting-----------------------------------\n");
 		if (waitms) usleep(waitms*1000)/*wait a bit*/;
 	} while (tries--);
 	return res;
@@ -5946,7 +5947,9 @@ camera_trigger_capture (Camera *camera, GPContext *context)
 	}
 
 
-	//lvl7 depth 
+
+	//lbl7 //triggers and doesnt wait for a respinse
+	if(0){
 	PTPContainer    ptp;
 	memset(&ptp, 0, sizeof(ptp));
 	ptp.Code=PTP_OC_NIKON_InitiateCaptureRecInMedia;
@@ -5957,18 +5960,12 @@ camera_trigger_capture (Camera *camera, GPContext *context)
 	ptp.Transaction_ID=params->transaction_id++;
 	ptp.SessionID=params->session_id;
 	params->sendreq_func (params, &ptp, PTP_DP_NODATA);
-	printf("finsihed senreq\n");
-	//params->getresp_func(params, &ptp);
-	uint32_t		rlen;
-	printf("1111111\n");
-	PTPUSBBulkContainer	usbresp;
-	printf("222222\n");
-	memset(&usbresp,0,sizeof(usbresp));
-	printf("333333\n");
-	printf("444444\n");
-	printf("finsihed get_resp_func\n");
+	}
 
-	return 0;
+	//return 0;
+
+
+
 
 	GP_LOG_D ("camera_trigger_capture");
 
